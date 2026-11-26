@@ -3,29 +3,43 @@
 #include <time.h>
 
 enum Attributes {STR, DEX, CON, INT, WIS, CHA};
+const char *Attributes_name(enum Attributes value) {
+    switch (value) {
+        case STR:    return "STR";
+        case DEX:    return "DEX";
+        case CON:    return "CON";
+        case INT:    return "INT";
+        case WIS:    return "WIS";
+        case CHA:    return "CHA";
+        default:     return "Unknown";
+    }
+}
 
 struct character {
     // Attributes
-    int baseAttribute[6];
+    int attributeScore[6];
     int attributeLevelModifier[6];
-    int attribute[6];
+    int attributeModifier[6];
+    int attributeCheckBonus[6];
     int level;
 };
 
-void rollAttributes(struct character *);
 int roll(int, int);
+void rollAttributeScore(struct character *);
+void setAttributeLevelModifier(struct character *);
+void setAttributeModifier(struct character *);
+void setAttributeCheckBonus(struct character *);
 void characterSheet(struct character *);
-void setPrimSec(struct character *);
-void calcAttributes(struct character *);
 
 int main(void) {
     srand(time(NULL));
     struct character PC1; //player character 1
     struct character *pPC1 = &PC1;
     // roll 3d6 for each attribute score
-    rollAttributes(pPC1);
-    setPrimSec(pPC1);
-    calcAttributes(pPC1);
+    rollAttributeScore(pPC1);
+    setAttributeLevelModifier(pPC1);
+    setAttributeModifier(pPC1);
+    setAttributeCheckBonus(pPC1);
     characterSheet(pPC1);
     return 0;
 }
@@ -38,20 +52,20 @@ int roll(int rolls, int die) {
     return sum;
 }
 
-void rollAttributes(struct character *PC) {
+void rollAttributeScore(struct character *PC) {
     printf("Rolling Attributes\n");
-    PC->baseAttribute[STR] = roll(3, 6);
-    PC->baseAttribute[DEX] = roll(3, 6);
-    PC->baseAttribute[CON] = roll(3, 6);
-    PC->baseAttribute[INT] = roll(3, 6);
-    PC->baseAttribute[WIS] = roll(3, 6);
-    PC->baseAttribute[CHA] = roll(3, 6);
+    PC->attributeScore[STR] = roll(3, 6);
+    PC->attributeScore[DEX] = roll(3, 6);
+    PC->attributeScore[CON] = roll(3, 6);
+    PC->attributeScore[INT] = roll(3, 6);
+    PC->attributeScore[WIS] = roll(3, 6);
+    PC->attributeScore[CHA] = roll(3, 6);
 
 }
 
-void setPrimSec(struct character *PC) {
+void setAttributeLevelModifier(struct character *PC) {
     // assign level 1
-    PC->level = 1;
+    PC->level = 1; // to be put into its own function
     // assign primary and secondary attr. modifiers based on level
     printf("Choose primary attributes,\n");
     printf("STR = %d\n", STR);
@@ -72,19 +86,55 @@ void setPrimSec(struct character *PC) {
     }
 }
 
-void calcAttributes(struct character *PC) {
+void setAttributeModifier(struct character *PC) {
     for (int a = STR; a <= CHA; a++) {
-        PC->attribute[a] = PC->baseAttribute[a] + PC->attributeLevelModifier[a];
+        switch (PC->attributeScore[a]) {
+            case 1:
+                PC->attributeModifier[a] = -4;
+                break;
+            case 2:
+            case 3:
+                PC->attributeModifier[a] = -3;
+                break;
+            case 4:
+            case 5:
+                PC->attributeModifier[a] = -2;
+                break;
+            case 6:
+            case 7:
+            case 8:
+                PC->attributeModifier[a] = -1;
+                break;
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                PC->attributeModifier[a] = 0;
+                break;
+            case 13:
+            case 14:
+            case 15:
+                PC->attributeModifier[a] = 1;
+                break;
+            case 16:
+            case 17:
+                PC->attributeModifier[a] = 2;
+            case 18:
+                PC->attributeModifier[a] = 3;
+        }
+    }
+}
+
+void setAttributeCheckBonus(struct character *PC) {
+    for (int a = STR; a <= CHA; a++) {
+        PC->attributeCheckBonus[a] = PC->attributeModifier[a] + PC->attributeLevelModifier[a];
     }
 }
 
 
 void characterSheet(struct character *PC) {
     printf("Character Sheet\n");
-    printf("STR = %d (+%d)\n", PC->attribute[STR], PC->attributeLevelModifier[STR]);
-    printf("DEX = %d (+%d)\n", PC->attribute[DEX], PC->attributeLevelModifier[DEX]);
-    printf("CON = %d (+%d)\n", PC->attribute[CON], PC->attributeLevelModifier[CON]);
-    printf("INT = %d (+%d)\n", PC->attribute[INT], PC->attributeLevelModifier[INT]);
-    printf("WIS = %d (+%d)\n", PC->attribute[WIS], PC->attributeLevelModifier[WIS]);
-    printf("CHA %d (+%d)\n", PC->attribute[CHA], PC->attributeLevelModifier[CHA]);
+    for (int a = STR; a <= CHA; a++) {
+        printf("%s check bonus = %d = [mod: %d (score: %d)]+[level mod:%d]\n",Attributes_name(a), PC->attributeCheckBonus[a], PC->attributeModifier[a], PC->attributeScore[a], PC->attributeLevelModifier[a]);
+    }
 }
