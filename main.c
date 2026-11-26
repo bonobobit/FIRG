@@ -3,13 +3,13 @@
 #include <time.h>
 
 enum Attributes {STR, DEX, CON, INT, WIS, CHA};
-enum AttributeLevelModifiers {PRI = 2, SEC = 1};
 
 struct character {
     // Attributes
     int baseAttribute[6];
     int attributeLevelModifier[6];
     int attribute[6];
+    int level;
 };
 
 void rollAttributes(struct character *);
@@ -50,6 +50,9 @@ void rollAttributes(struct character *PC) {
 }
 
 void setPrimSec(struct character *PC) {
+    // assign level 1
+    PC->level = 1;
+    // assign primary and secondary attr. modifiers based on level
     printf("Choose primary attributes,\n");
     printf("STR = %d\n", STR);
     printf("DEX = %d\n", DEX);
@@ -60,6 +63,13 @@ void setPrimSec(struct character *PC) {
     printf("e.g.: choosing \"1 2\" selects STR & DEX: ");
     int attr1 = 0, attr2 = 0;
     scanf("%d %d", &attr1, &attr2);
+    for (int i = STR; i <= CHA; i++) {
+        if (i == (attr1-1) || i == (attr2-1)) {
+            PC->attributeLevelModifier[i] = PC->level;
+        } else {
+            PC->attributeLevelModifier[i] = (int)((PC->level)/2);
+        }
+    }
 }
 
 void calcAttributes(struct character *PC) {
@@ -74,9 +84,7 @@ void characterSheet(struct character *PC) {
     printf("STR = %d (+%d)\n", PC->attribute[STR], PC->attributeLevelModifier[STR]);
     printf("DEX = %d (+%d)\n", PC->attribute[DEX], PC->attributeLevelModifier[DEX]);
     printf("CON = %d (+%d)\n", PC->attribute[CON], PC->attributeLevelModifier[CON]);
-    printf("INT = %d (%d)\n", PC->attribute[INT], PC->attributeLevelModifier[INT]);
-    printf("WIS = %d %d\n", PC->attribute[WIS], PC->attributeLevelModifier[WIS]);
-    printf("CHA %d %d\n", PC->attribute[CHA], PC->attributeLevelModifier[CHA]);
+    printf("INT = %d (+%d)\n", PC->attribute[INT], PC->attributeLevelModifier[INT]);
+    printf("WIS = %d (+%d)\n", PC->attribute[WIS], PC->attributeLevelModifier[WIS]);
+    printf("CHA %d (+%d)\n", PC->attribute[CHA], PC->attributeLevelModifier[CHA]);
 }
-
-# need to implement level
