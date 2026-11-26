@@ -134,7 +134,8 @@ void setAttributeCheckBonus(struct character *PC) {
 
 void characterSheet(struct character *PC) {
     printf("Character Sheet\n");
+    printf("Level = %d\n", PC->level);
     for (int a = STR; a <= CHA; a++) {
-        printf("%s check bonus = %d = [mod: %d (score: %d)]+[level mod:%d]\n",Attributes_name(a), PC->attributeCheckBonus[a], PC->attributeModifier[a], PC->attributeScore[a], PC->attributeLevelModifier[a]);
+        printf("%s check bonus = %d = [mod: %d (score: %d)] + [level mod:%d]\n",Attributes_name(a), PC->attributeCheckBonus[a], PC->attributeModifier[a], PC->attributeScore[a], PC->attributeLevelModifier[a]);
     }
 }
