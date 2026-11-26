@@ -13,7 +13,7 @@ struct character {
 };
 
 void rollAttributes(struct character *);
-int d6();
+int roll(int, int);
 void characterSheet(struct character *);
 
 int main(void) {
@@ -26,18 +26,22 @@ int main(void) {
     return 0;
 }
 
-int d6() {
-    return (rand() % 6) + 1;
+int roll(int rolls, int die) {
+    int sum = 0;
+    for (int i = 0; i < rolls; i++) {
+        sum += (rand() % die) +1;
+    }
+    return sum;
 }
 
 void rollAttributes(struct character *PC) {
     printf("Rolling Attributes\n");
-    PC->STR = d6()+d6()+d6();
-    PC->DEX = d6()+d6()+d6();
-    PC->CON = d6()+d6()+d6();
-    PC->INT = d6()+d6()+d6();
-    PC->WIS = d6()+d6()+d6();
-    PC->CHA = d6()+d6()+d6();
+    PC->STR = roll(3, 6);
+    PC->DEX = roll(3, 6);
+    PC->CON = roll(3, 6);
+    PC->INT = roll(3, 6);
+    PC->WIS = roll(3, 6);
+    PC->CHA = roll(3, 6);
 }
 
 void characterSheet(struct character *PC) {
